@@ -6,10 +6,10 @@ import { Tweet, TweetBody } from '../../typings';
 import { fetchTweets } from '../utils/fetchTweets';
 
 interface Props {
-  setTweets: Dispatch<SetStateAction<Tweet[]>>
+  setTweets: React.Dispatch<React.SetStateAction<Tweet[]>>
 }
 
-function Tweetbox({ setTweets }: Props) {
+function TweetBox({ setTweets }: Props) {
   const [input, setInput] = useState<string>('');
   const [image, setImage] = useState<string>('');
 
@@ -38,15 +38,17 @@ function Tweetbox({ setTweets }: Props) {
       image: image
     }
 
+    console.log(tweetInfo)
     const result = await fetch(`/api/addTweet`, {
       body: JSON.stringify(tweetInfo),
       method: 'POST'
     })
 
+    console.log(result)
+
     const json = await result.json();
 
     const newTweets = await fetchTweets();
-
     setTweets(newTweets);
 
     toast('Tweet Posted', {
@@ -56,7 +58,8 @@ function Tweetbox({ setTweets }: Props) {
     return json;
   } 
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     postTweet();
@@ -70,7 +73,7 @@ function Tweetbox({ setTweets }: Props) {
     <div className="flex p-5 space-x-2">
       <img className="object-cover mt-4 rounded-full h-14 w-14" src={session?.user?.image || "https://links.papareact.com/gll"} alt="" />
       <div className="flex items-center flex-1 pl-2">
-        <form action="" className="flex flex-col flex-1">
+        <form onSubmit={handleSubmit} action="" className="flex flex-col flex-1">
           <input value={input} onChange={e => setInput(e.target.value)} type="text" placeholder="What's Happening?" className="w-full h-24 text-xl outline-none placeholder:text-xl" />
           <div className="flex items-center">
             <div className="flex flex-1 space-x-2 text-twitter">
@@ -80,7 +83,7 @@ function Tweetbox({ setTweets }: Props) {
               <CalendarIcon className="w-5 h-5 transition-transform duration-150 ease-out cursor-pointer hover:scale-150"/>
               <LocationMarkerIcon className="w-5 h-5 transition-transform duration-150 ease-out cursor-pointer hover:scale-150"/>
             </div>
-            <button onClick={handleSubmit} disabled={!input || !session} className="px-5 py-2 font-bold text-white rounded-full disabled:opacity-40 bg-twitter">Tweet</button>
+            <button disabled={!input || !session} className="px-5 py-2 font-bold text-white rounded-full disabled:opacity-40 bg-twitter">Tweet</button>
           </div>
 
           {imageUrlBoxIsOpen && (
@@ -97,4 +100,4 @@ function Tweetbox({ setTweets }: Props) {
   )
 }
 
-export default Tweetbox
+export default TweetBox
